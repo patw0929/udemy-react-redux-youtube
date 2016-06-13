@@ -1,57 +1,44 @@
-import _ from 'lodash';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import YTSearch from 'youtube-api-search';
-import SearchBar from './components/search_bar';
-import VideoList from './components/video_list';
-import VideoDetail from './components/video_detail';
-
-const API_KEY = 'AIzaSyDQTY5vI6NEjZJegr_pZwiTxiU9jXicN2w';
-const DEFAULT_TERM = 'react.js';
+import { createStore } from 'redux'
+import { Provider } from 'react-redux'
+import { API_KEY } from './config/config';
+import RootReducer from './reducers'
+import SearchBar from './containers/search_bar';
+import VideoList from './containers/video_list';
+import VideoDetail from './containers/video_detail';
 
 class App extends React.Component {
   constructor(props) {
     super(props);
-
-    this.state = {
-      videos: [],
-      selectedVideo: null,
-      term: DEFAULT_TERM,
-    };
-
-    this.videoSearch(DEFAULT_TERM);
-  }
-
-  videoSearch(term) {
-    YTSearch({ key: API_KEY, term }, (videos) => {
-      this.setState({
-        selectedVideo: videos[0],
-        videos,
-        term,
-      });
-    });
-  }
-
-  onVideoSelect(selectedVideo) {
-    this.setState({
-      selectedVideo,
-    });
   }
 
   render() {
-    const videoSearch = _.debounce((term) => {
-      this.videoSearch(term);
-    }, 300);
+    const props = this.props;
+    const { store } = this.context;
+    const state = store.getState();
 
     return (
       <div>
-        <SearchBar term={this.state.term} onSearchTermChange={videoSearch} />
-        <VideoDetail video={this.state.selectedVideo} />
-        <VideoList videos={this.state.videos}
-          onVideoSelect={this.onVideoSelect.bind(this)} />
+        <SearchBar />
+        <VideoDetail />
+        <VideoList apiKey={API_KEY} />
       </div>
     );
   }
 }
 
-ReactDOM.render(<App />, document.querySelector('.container'));
+App.contextTypes = {
+  store: React.PropTypes.object,
+};
+
+const store = createStore(RootReducer);
+
+store.subscribe(() => {
+  console.log(store.getState());
+});
+
+ReactDOM.render(
+  <Provider store={store}>
+    <App />
+  </Provider>, document.querySelector('.container'));
