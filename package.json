@@ -23,7 +23,8 @@
     "mocha": "^2.4.5",
     "react-addons-test-utils": "^0.14.7",
     "webpack": "^1.12.9",
-    "webpack-dev-server": "^1.14.0"
+    "webpack-dev-server": "^1.14.0",
+    "youtube-api-search": "0.0.5"
   },
   "dependencies": {
     "babel-preset-stage-1": "^6.1.18",
